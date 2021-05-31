@@ -1,0 +1,22 @@
+.nav-bar {
+    position: fixed;
+    height: 20px;
+    width: 100%;
+    top: 0;
+    z-index: 999999;
+}
+/*
+.nav-bar .nav-bar-item.dropdown .dropdown-trigger {
+    height: 100%;
+    padding: 5px 5px;
+    color: white;
+}
+.nav-bar .nav-bar-item.dropdown .dropdown-menu.active {
+    display: block !important;
+}
+
+.nav-bar .nav-bar-item.dropdown .dropdown-menu {
+    height: auto;
+    width: 100%;
+    display: none;
+} */

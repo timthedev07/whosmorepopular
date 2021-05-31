@@ -1,6 +1,5 @@
 import firebase from "firebase/app";
 import "firebase/firestore";
-import "firebase/auth";
 
 // import { useAuthState } from 'react-firebase-hooks/auth';
 // import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -12,7 +11,6 @@ const firebaseConfig = {
     storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.REACT_APP_FIREBASE_APP_ID,
-    measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 // Initialize Firebase
 var firebaseApp;
@@ -22,7 +20,20 @@ if (!firebase.apps.length) {
     firebaseApp = firebase.app();
 }
 
-export const storage = firebaseApp.storage();
-export const auth = firebaseApp.auth();
+firebaseApp
+    .firestore()
+    .enablePersistence()
+    .catch((err) => {
+        if (err.code === "failed-precondition") {
+            // Multiple tabs open, persistence can only be enabled
+            // in one tab at a a time.
+            // ...
+        } else if (err.code === "unimplemented") {
+            // The current browser does not support all of the
+            // features required to enable persistence
+            // ...
+        }
+    });
+
 export const db = firebaseApp.firestore();
 export default firebaseApp;

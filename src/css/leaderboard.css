@@ -1,0 +1,119 @@
+.rank-item {
+    width: 80%;
+    max-width: 1000px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 20px;
+    transition: 0.8s;
+    border-radius: 30px;
+    color: white;
+    background: linear-gradient(165deg, #9944eedd 0%, #eb2647dd 100%);
+    transform: scale(0.9);
+}
+@media screen and (max-width: 900px) {
+    .rank-item {
+        width: 95%;
+        max-width: 1000px;
+        height: 100px;
+        justify-content: space-between;
+        margin-bottom: 17px;
+        border-radius: 30px;
+        padding-left: 30px;
+    }
+    .rank-item-action-button-container {
+        right: 5%;
+    }
+}
+@media screen and (max-width: 750px) {
+    .rank-item {
+        width: 95%;
+        max-width: 1000px;
+        height: 100px;
+        justify-content: space-between;
+        margin-bottom: 17px;
+        border-radius: 30px;
+        padding-left: 30px;
+    }
+    .rank-item-action-button-container {
+        right: 10px;
+    }
+}
+@media screen and (max-width: 400px) {
+    .rank-item {
+        flex-direction: column;
+        height: max-content;
+    }
+    .rank-items-container .rank-item .rank-item-action-button-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        position: relative;
+        margin-bottom: 20px;
+    }
+}
+
+.rank-items-container {
+    display: flex;
+    justify-content: center;
+    width: 90vw;
+    margin-left: 5vw;
+    margin-right: 5vw;
+    flex-wrap: wrap;
+}
+.rank-item-action-button-container {
+    right: 10%;
+    width: 60%;
+    position: absolute;
+    display: block;
+}
+.rank-item-action-button-container .rank-item-action-button,
+.rank-item-action-button-container .rank-item-action-button:focus {
+    float: right;
+    display: block;
+    margin-left: 2%;
+    outline: none !important;
+    min-width: 40px;
+    border-radius: 20px;
+    width: 60px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none !important;
+}
+.rank-item-action-button-container .rank-item-action-button .icons {
+    height: 100%;
+    width: 100%;
+}
+.btn-light:hover {
+    background-color: #ffffff !important;
+}
+.btn-dark:hover {
+    background-color: black !important;
+}
+.rank-item.ranked-0 {
+    transform: scale(1);
+}
+.rank-item.ranked-1 {
+    transform: scale(0.965);
+}
+.rank-item.ranked-2 {
+    transform: scale(0.9);
+}
+
+.rank-item h3 {
+    font-size: calc(16px + 1.7vw);
+}
+
+.leaderboard-heading {
+    margin: 20px;
+    margin-top: 50px;
+    padding: 10px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    background-color: rgba(56, 56, 56, 0.548);
+}
