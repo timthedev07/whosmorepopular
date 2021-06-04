@@ -1,5 +1,9 @@
 body {
-    background: url(../assets/images/waves/blue.svg) no-repeat;
-    background-size: 110vw 110vh;
-    background-attachment: fixed;
+  background: url(../assets/images/waves/blue.svg) no-repeat;
+  background-size: 110vw 110vh;
+  background-attachment: fixed;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+.page-wrapper {
+  padding: 30px;
 }
