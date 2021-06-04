@@ -7,27 +7,9 @@ import { useRanking } from "../contexts/RankingControl";
 export const Nav: React.FC = () => {
   const rankingContext = useRanking();
 
-  const signin = (provider: string) => {
-    if (!rankingContext) return;
-    switch (provider) {
-      case "google": {
-        rankingContext.signInWithGoogle().catch();
-        break;
-      }
-      case "github": {
-        rankingContext.signInWithGithub().catch();
-        break;
-      }
-    }
-  };
-
   const [windowWidth, setWindowWidth] = useState<number>(
     () => window.innerWidth
   );
-
-  const isSmallScreen = () => {
-    return windowWidth < 590;
-  };
 
   useEffect(() => {
     const callBack = () => {
@@ -36,9 +18,37 @@ export const Nav: React.FC = () => {
     window.addEventListener("resize", callBack);
   }, []);
 
+  const signin = (provider: string) => {
+    if (!rankingContext) return;
+    switch (provider) {
+      case "google": {
+        rankingContext
+          .signInWithGoogle()
+          .then((res) => {})
+          .catch((err) => {});
+        break;
+      }
+      case "github": {
+        rankingContext
+          .signInWithGithub()
+          .then((res) => {})
+          .catch((err) => {});
+        break;
+      }
+    }
+  };
+
+  const isSmallScreen = () => {
+    return windowWidth < 590;
+  };
   if (!rankingContext) return null;
 
-  console.log(rankingContext.currentUser);
+  const handleLogout = () => {
+    rankingContext
+      .logout()
+      .then((res) => {})
+      .catch((err) => {});
+  };
 
   return (
     <div className="nav-bar">
@@ -65,7 +75,9 @@ export const Nav: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="item">Sign out</div>
+                <div onClick={() => handleLogout()} className="item">
+                  Sign out
+                </div>
               )}
               <div className="item">
                 <i className="dropdown icon"></i>

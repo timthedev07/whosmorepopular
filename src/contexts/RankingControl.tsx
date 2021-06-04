@@ -103,6 +103,10 @@ export const RankingControl: React.FC<Props> = ({ children }) => {
     return firebase.auth().signInWithPopup(provider);
   };
 
+  // const switchLeaderboard = (target: string) => {
+  //   setCurrRankingDisplayed(target);
+  // };
+
   /**
    * Logs an user out
    */
