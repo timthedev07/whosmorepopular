@@ -5,6 +5,7 @@ import { db, auth } from "../firebase";
 export const LANGUAGE_COLLECTION_NAME: string = "programming-languages";
 export const BACKEND_FRAMEWORK_NAME: string = "backend-frameworks";
 export const FRONTEND_FRAMEWORK_NAME: string = "frontend-frameworks";
+export const MACHINE_LEARNING_NAME: string = "machine-learning-libraries";
 
 // types and interfaces
 
@@ -27,6 +28,10 @@ type RankingContextType = {
   signInWithGoogle: () => Promise<firebase.auth.UserCredential>;
   signInWithGithub: () => Promise<firebase.auth.UserCredential>;
   logout: () => Promise<void>;
+  switchLeaderboard: (target: string) => void;
+  otherLeaderboards: string[];
+  canVote: boolean;
+  incrementVoteRecord: () => void;
 };
 
 const RankingContext = createContext<RankingContextType | null>(null);
@@ -51,9 +56,18 @@ export const rankItems = (ranking: Ranking) => {
 export const RankingControl: React.FC<Props> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<firebase.User | null>(null);
   const [currRankingDisplayed, setCurrRankingDisplayed] = useState<string>(
-    () => FRONTEND_FRAMEWORK_NAME
+    () => {
+      return localStorage.getItem("leaderboard") || FRONTEND_FRAMEWORK_NAME;
+    }
   );
+  const [canVote, setCanVote] = useState<boolean>(false);
   const [liveRanking, setLiveRanking] = useState<Ranking>(() => []);
+  const [otherLeaderboards, setOtherLeaderboards] = useState<Array<string>>([]);
+
+  const switchLeaderboard = (target: string) => {
+    setCurrRankingDisplayed(target);
+    localStorage.setItem("leaderboard", target);
+  };
 
   /**
    * Function for voting a specific item
@@ -103,23 +117,92 @@ export const RankingControl: React.FC<Props> = ({ children }) => {
     return firebase.auth().signInWithPopup(provider);
   };
 
-  // const switchLeaderboard = (target: string) => {
-  //   setCurrRankingDisplayed(target);
-  // };
+  const incrementVoteRecord = () => {
+    if (!currentUser) return;
+    const userInfoRef = db.collection("u").doc(currentUser.uid);
+    userInfoRef.update({
+      v: firebase.firestore.FieldValue.increment(1),
+    });
+  };
 
   /**
    * Logs an user out
    */
   const logout = () => {
     setCurrentUser(null);
+    localStorage.removeItem("user-info");
     return auth.signOut();
   };
+
+  useEffect(() => {
+    setOtherLeaderboards(
+      [
+        LANGUAGE_COLLECTION_NAME,
+        BACKEND_FRAMEWORK_NAME,
+        MACHINE_LEARNING_NAME,
+        FRONTEND_FRAMEWORK_NAME,
+      ].filter((each) => each !== currRankingDisplayed)
+    );
+  }, [currRankingDisplayed]);
+
+  useEffect(() => {
+    const checkUserVotes = () => {
+      if (!currentUser) return;
+      let hasUserInfo = localStorage.getItem("user-info");
+      const userInfoRef = db.collection("u").doc(currentUser.uid);
+      userInfoRef
+        .get({ source: hasUserInfo ? "cache" : "server" })
+        .then((docSnapshot) => {
+          if (docSnapshot.exists) {
+            userInfoRef.onSnapshot((doc) => {
+              // here we implement the logic of limiting user's votes per day
+
+              const data = doc.data();
+              if (!data) return;
+              let today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              // first start off by getting the different between the
+              // date where the limit was hit and today
+              let diffInDays =
+                Math.abs(data.dt.toDate().valueOf() - today.valueOf()) /
+                (60 * 60 * 24 * 1000);
+
+              // if that diff is greater than one, meaning the limit
+              // is going to be reset today
+              if (diffInDays >= 1) {
+                userInfoRef.update({
+                  v: 0,
+                  dt: firebase.firestore.Timestamp.fromDate(today),
+                });
+                setCanVote(true);
+              } else if (data.v < 10) {
+                // otherwise if there is still some votes left today
+                setCanVote(true);
+              } else {
+                // else that means the user hit the limit today
+                setCanVote(false);
+              }
+            });
+          } else {
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
+            userInfoRef.set({
+              v: 0,
+              dt: firebase.firestore.Timestamp.fromDate(today),
+            });
+            localStorage.setItem("user-info", "valid");
+            setCanVote(true);
+          }
+        });
+    };
+    checkUserVotes();
+  }, [currentUser]);
 
   useEffect(() => {
     const unsubscribe = db
       .collection(currRankingDisplayed)
       .onSnapshot((snapshot) => {
-        console.log("Data change detected");
         const res = snapshot.docs.map((doc) => {
           const data = doc.data();
           return { id: doc.id, name: data.name, votes: data.votes };
@@ -185,6 +268,10 @@ export const RankingControl: React.FC<Props> = ({ children }) => {
     signInWithGoogle,
     signInWithGithub,
     logout,
+    switchLeaderboard,
+    otherLeaderboards,
+    canVote,
+    incrementVoteRecord,
   };
 
   return (

@@ -5,10 +5,10 @@
   top: 0;
   z-index: 999;
   background: linear-gradient(
-    180deg,
+    135deg,
     #212121 0%,
-    #212121 60%,
-    #313131 80%,
+    #212121 50%,
+    #313131 750%,
     rgba(49, 49, 49, 0.795) 100%
   );
   display: flex;

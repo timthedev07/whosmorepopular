@@ -8,9 +8,16 @@ import { CustomAlert } from "../components/CustomAlert";
 interface Props {
   ranking: Ranking;
   collectionName: string;
+  pauseVote: () => void;
+  unpauseVote: () => void;
 }
 
-export const Leaderboard: React.FC<Props> = ({ ranking, collectionName }) => {
+export const Leaderboard: React.FC<Props> = ({
+  ranking,
+  collectionName,
+  pauseVote,
+  unpauseVote,
+}) => {
   const rankingContext = useRanking();
   const [alertDisplay, setAlertDisplay] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
@@ -26,32 +33,49 @@ export const Leaderboard: React.FC<Props> = ({ ranking, collectionName }) => {
   const handleClick = (action: "vote" | "downvote", id: string) => {
     if (!rankingContext) return;
     if (!rankingContext.currentUser) {
-      setAlertMessage("Sign in to vote for your favorite library/language");
+      setAlertMessage("Sign in to vote for your favorite library/language. 😉");
       setAlertDisplay(true);
-
       return;
     }
+    if (!rankingContext.canVote) {
+      setAlertMessage(
+        "Sorry, you have reached the limit of voting 10 times a day. 🤨"
+      );
+      setAlertDisplay(true);
+      return;
+    }
+    pauseVote();
     switch (action) {
       case "vote": {
-        rankingContext.vote(id).catch((err) => {
-          if (err.code === "permission-denied") {
-            setAlertMessage(
-              "Sign in to vote for your favorite library/language"
-            );
-            setAlertDisplay(true);
-          }
-        });
+        rankingContext
+          .vote(id)
+          .then((res) => {
+            rankingContext.incrementVoteRecord();
+          })
+          .catch((err) => {
+            if (err.code === "permission-denied") {
+              setAlertMessage(
+                "Sign in to vote for your favorite library/language. 😉"
+              );
+              setAlertDisplay(true);
+            }
+          });
         break;
       }
       case "downvote": {
-        rankingContext.downVote(id).catch((err) => {
-          if (err.code === "permission-denied") {
-            setAlertMessage(
-              "Sign in to vote for your favorite library/language"
-            );
-            setAlertDisplay(true);
-          }
-        });
+        rankingContext
+          .downVote(id)
+          .then((res) => {
+            rankingContext.incrementVoteRecord();
+          })
+          .catch((err) => {
+            if (err.code === "permission-denied") {
+              setAlertMessage(
+                "Sign in to vote for your favorite library/language. 😉"
+              );
+              setAlertDisplay(true);
+            }
+          });
         break;
       }
     }

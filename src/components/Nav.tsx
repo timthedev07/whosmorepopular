@@ -3,6 +3,7 @@ import { ReactComponent as LBIcon } from "../assets/images/icons/leaderboard.svg
 import { ReactComponent as GithubIcon } from "../assets/images/icons/github.svg";
 import { ReactComponent as GoogleIcon } from "../assets/images/icons/google.svg";
 import { useRanking } from "../contexts/RankingControl";
+import { capitalize } from "../utils/Strings";
 
 export const Nav: React.FC = () => {
   const rankingContext = useRanking();
@@ -50,6 +51,18 @@ export const Nav: React.FC = () => {
       .catch((err) => {});
   };
 
+  const otherLbs = rankingContext.otherLeaderboards.map((each) => {
+    return (
+      <div
+        onClick={() => rankingContext.switchLeaderboard(each)}
+        className="item"
+        key={each}
+      >
+        {capitalize(each).replace(/-/g, " ")}
+      </div>
+    );
+  });
+
   return (
     <div className="nav-bar">
       <LBIcon className="nav-bar-item nav-leading-icon" />
@@ -82,11 +95,7 @@ export const Nav: React.FC = () => {
               <div className="item">
                 <i className="dropdown icon"></i>
                 Other leaderboards
-                <div className={`menu right`}>
-                  <div className="item">Programming Languages</div>
-                  <div className="item">Backend Frameworks</div>
-                  <div className="item">Machine Learning Libraries</div>
-                </div>
+                <div className={`menu right`}>{otherLbs}</div>
               </div>
             </>
           ) : (
@@ -112,12 +121,9 @@ export const Nav: React.FC = () => {
               >
                 Other leaderboards
               </div>
-              <div className="item">Programming Languages</div>
-              <div className="item">Backend Frameworks</div>
-              <div className="item">Machine Learning Libraries</div>
+              {otherLbs}
             </>
           )}
-          <div className="item">Manual Refresh</div>
         </div>
       </div>
     </div>

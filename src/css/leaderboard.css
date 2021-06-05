@@ -58,9 +58,6 @@
 .rank-items-container {
   display: flex;
   justify-content: center;
-  width: 90vw;
-  margin-left: 5vw;
-  margin-right: 5vw;
   flex-wrap: wrap;
 }
 .rank-item-action-button-container {
