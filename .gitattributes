@@ -1,1 +1,2 @@
-src/* -linguist-detectable
+public/* linguist-vendored=true
+production/* linguist-vendored=true
